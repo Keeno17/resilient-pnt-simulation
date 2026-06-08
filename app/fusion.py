@@ -1,6 +1,7 @@
 from typing import Tuple, List
 from sources import NavigationSource
 
+
 def fuse_positions(trusted_readings: List):
     """Fuse the positions from trusted readings to produce a final estimated reading."""
 
@@ -26,7 +27,9 @@ def fuse_positions(trusted_readings: List):
     final_x = weighted_x / total_weight if total_weight > 0 else 0.0
     final_y = weighted_y / total_weight if total_weight > 0 else 0.0
 
-    overall_confidence = total_weight / len(trusted_readings) if trusted_readings else 0.0
+    overall_confidence = (
+        total_weight / len(trusted_readings) if trusted_readings else 0.0
+    )
 
     if len(trusted_readings) < 2:
         status = "degraded"

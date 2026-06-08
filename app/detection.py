@@ -19,8 +19,12 @@ def calculate_consensus_position(readings) -> Tuple[float, float]:
     if total_confidence == 0:
         # fallback to simple average if confidence sums to zero
         count = max(1, len(readings["sources"]))
-        avg_x = sum(s.get("position", (0.0, 0.0))[0] for s in readings["sources"]) / count
-        avg_y = sum(s.get("position", (0.0, 0.0))[1] for s in readings["sources"]) / count
+        avg_x = (
+            sum(s.get("position", (0.0, 0.0))[0] for s in readings["sources"]) / count
+        )
+        avg_y = (
+            sum(s.get("position", (0.0, 0.0))[1] for s in readings["sources"]) / count
+        )
         return (avg_x, avg_y)
 
     return (weighted_x / total_confidence, weighted_y / total_confidence)
@@ -30,10 +34,13 @@ def distance_between(pos1, pos2):
     """Calculate the distance between two positions."""
 
     from math import sqrt
+
     return sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
 
 
-def detect_anomalies(readings, consensus_position=None) -> Tuple[List[NavigationSource], List[NavigationSource]]:
+def detect_anomalies(
+    readings, consensus_position=None
+) -> Tuple[List[NavigationSource], List[NavigationSource]]:
     """Detect anomalies by comparing each source's position to the consensus position."""
 
     if consensus_position is None:
@@ -43,7 +50,9 @@ def detect_anomalies(readings, consensus_position=None) -> Tuple[List[Navigation
     trusted: List[NavigationSource] = []
 
     for source in readings["sources"]:
-        distance = distance_between(source.get("position", (0.0, 0.0)), consensus_position)
+        distance = distance_between(
+            source.get("position", (0.0, 0.0)), consensus_position
+        )
         signal_strength = source.get("signal_strength", 0)
         confidence = source.get("confidence", 0.0)
 
@@ -57,6 +66,7 @@ def detect_anomalies(readings, consensus_position=None) -> Tuple[List[Navigation
             trusted.append(source)
 
     return (flagged, trusted)
+
 
 def calculate_trust_score(source) -> float:
     """Calculate a trust score for a source based on its properties."""
